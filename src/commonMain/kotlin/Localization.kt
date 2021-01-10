@@ -2,7 +2,11 @@ import ParseResult.*
 
 data class Localization(val file: String, val texts: List<Text>)
 
-data class Text(val id: String, val variants: Map<String, String>)
+data class Text(val id: TextId, val variants: Map<Locale, String>)
+
+typealias TextId = String
+
+typealias Locale = String
 
 /*
  |  COL_ID |  en_EN  |   ....  |  ru_RU  |
