@@ -54,9 +54,10 @@ class PreTranslatedLocalizationContext(
 sealed class PreEditedText
 object Skipped : PreEditedText()
 data class Edited(val result: String) : PreEditedText()
+object Empty : PreEditedText()
 
 suspend fun LocalizationContext.localize(
-    cache: Map<TextId, PreEditedText?>,
+    cache: Map<TextId, PreEditedText>,
     file: PropertiesFile,
     locales: List<Locale>
 ): List<PropertiesFile> {
