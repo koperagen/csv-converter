@@ -2,7 +2,7 @@ import ParseResult.*
 
 data class Localization(val file: String, val texts: List<Text>)
 
-data class Text(val id: TextId, val variants: Map<Locale, String>)
+data class Text(val id: TextId, val variants: Map<Locale, PreEditedText>)
 
 typealias TextId = String
 
@@ -21,7 +21,7 @@ fun parse(rawData: List<Map<String, String>>): ParseResult {
     val data = buildList {
         for (row in rawData) {
             val id = row[COL_ID] ?: return Error.MissingIdError(row)
-            val variants = row - COL_ID
+            val variants = (row - COL_ID).mapValues { (_, value) -> PreEditedText.of(value) }
             add(Text(id, variants))
         }
     }

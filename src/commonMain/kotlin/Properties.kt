@@ -51,7 +51,18 @@ class PreTranslatedLocalizationContext(
 
 }
 
-sealed class PreEditedText
+sealed class PreEditedText {
+    companion object {
+        fun of(s: String): PreEditedText {
+            return when (s) {
+                "*" -> Skipped
+                "" -> Empty
+                else -> Edited(s)
+            }
+        }
+    }
+}
+
 object Skipped : PreEditedText()
 data class Edited(val result: String) : PreEditedText()
 object Empty : PreEditedText()
