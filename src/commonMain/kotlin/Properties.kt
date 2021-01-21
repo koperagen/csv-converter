@@ -12,23 +12,58 @@ fun Iterable<String>.parse(): Iterable<Row> =
     }
 
 interface TranslationService {
-    suspend fun translate(source: String, translation: Translation): String
+    suspend fun translate(text: String, translation: Translation): String
+    suspend fun translate(texts: List<String>, translation: Translation): List<String>
 
     data class Translation(val from: Locale, val to: Locale)
 }
 
 interface LocalizationContext {
-    suspend fun translate(row: Row, translation: TranslationService.Translation): Row
+    suspend fun translate(
+        cache: Map<TextId, PreEditedText?>,
+        rows: List<Row>,
+        translation: TranslationService.Translation
+    ): List<Row>
 }
 
+class PreTranslatedLocalizationContext(
+    private val service: TranslationService
+) : LocalizationContext {
+
+    override suspend fun translate(
+        cache: Map<TextId, PreEditedText?>,
+        rows: List<Row>,
+        translation: TranslationService.Translation
+    ): List<Row> {
+        val candidates = rows.filterNot { cache[it.id] is Skipped }
+        val alreadyTranslated = candidates.mapNotNull { row ->
+            (cache[row.id] as? Edited)?.let { row.copy(text = it.result) }
+        }
+        val toBeTranslated = candidates.filter { cache[it.id] == null }
+        val (ids, texts) = toBeTranslated.map { it.id to it.text }.unzip()
+        val translatedTexts = service.translate(texts, translation)
+        return alreadyTranslated + recoverIds(ids, translatedTexts)
+    }
+
+    private fun recoverIds(ids: List<TextId>, texts: List<String>): List<Row> {
+        return ids.mapIndexed { index, id -> Row(id, texts[index]) }
+    }
+
+}
+
+sealed class PreEditedText
+object Skipped : PreEditedText()
+data class Edited(val result: String) : PreEditedText()
+
 suspend fun LocalizationContext.localize(
+    cache: Map<TextId, PreEditedText?>,
     file: PropertiesFile,
     locales: List<Locale>
 ): List<PropertiesFile> {
     return locales.map {
-        val localizedContent = file.contents.map { row ->
-            translate(row, TranslationService.Translation(file.locale, it))
-        }
+        val options = TranslationService.Translation(file.locale, it)
+        val localizedContent = translate(cache, file.contents, options)
+
         file.copy(locale = it, contents = localizedContent)
     }
 }
