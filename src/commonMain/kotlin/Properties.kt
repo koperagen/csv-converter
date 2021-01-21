@@ -20,7 +20,7 @@ interface TranslationService {
 
 interface LocalizationContext {
     suspend fun translate(
-        cache: Map<TextId, PreEditedText?>,
+        cache: Map<TextId, PreEditedText>,
         rows: List<Row>,
         translation: TranslationService.Translation
     ): List<Row>
@@ -31,7 +31,7 @@ class PreTranslatedLocalizationContext(
 ) : LocalizationContext {
 
     override suspend fun translate(
-        cache: Map<TextId, PreEditedText?>,
+        cache: Map<TextId, PreEditedText>,
         rows: List<Row>,
         translation: TranslationService.Translation
     ): List<Row> {
