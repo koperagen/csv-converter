@@ -24,6 +24,17 @@ interface LocalizationContext {
         rows: List<Row>,
         translation: TranslationService.Translation
     ): List<Row>
+
+    data class Cache(val locale: Locale, val map: Map<TextId, PreEditedText>)
+}
+
+fun Localization.cache(): List<LocalizationContext.Cache> {
+    return locales.map { locale ->
+        val map = texts.associate {
+            it.id to (it.variants[locale] ?: error("Localization file $file misses locale $locale for id ${it.id}"))
+        }
+        LocalizationContext.Cache(locale, map)
+    }
 }
 
 class PreTranslatedLocalizationContext(
@@ -68,14 +79,13 @@ data class Edited(val result: String) : PreEditedText()
 object Empty : PreEditedText()
 
 suspend fun LocalizationContext.localize(
-    cache: Map<TextId, PreEditedText>,
-    file: PropertiesFile,
-    locales: List<Locale>
+    translations: List<LocalizationContext.Cache>,
+    file: PropertiesFile
 ): List<PropertiesFile> {
-    return locales.map {
-        val options = TranslationService.Translation(file.locale, it)
+    return translations.map { (locale, cache) ->
+        val options = TranslationService.Translation(file.locale, locale)
         val localizedContent = translate(cache, file.contents, options)
 
-        file.copy(locale = it, contents = localizedContent)
+        file.copy(locale = locale, contents = localizedContent)
     }
 }
