@@ -68,7 +68,7 @@ class PreTranslatedLocalizationContext(
         val alreadyTranslated = candidates.mapNotNull { row ->
             (cache[row.id] as? Edited)?.let { row.copy(text = it.result) }
         }
-        val toBeTranslated = candidates.filter { cache[it.id] == null }
+        val toBeTranslated = candidates.filter { cache[it.id] == Empty }
         val (ids, texts) = toBeTranslated.map { it.id to it.text }.unzip()
         val translatedTexts = service.translate(texts, translation)
         return alreadyTranslated + recoverIds(ids, translatedTexts)
