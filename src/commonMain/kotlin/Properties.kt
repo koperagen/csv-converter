@@ -2,6 +2,12 @@ data class Row(val id: TextId, val text: String)
 
 data class PropertiesFile(val groupName: String, val locale: Locale, val contents: List<Row>)
 
+val PropertiesFile.fullName: String get() = "${groupName}_$locale.properties"
+
+val PropertiesFile.contentString: String get() = contents.joinToString("\n") {
+    "${it.id}=${it.text}"
+}
+
 fun Iterable<String>.parse(): Iterable<Row> =
     filterNot { it.startsWith('#') || it.isBlank() }
     .map {
@@ -89,3 +95,4 @@ suspend fun LocalizationContext.localize(
         file.copy(locale = locale, contents = localizedContent)
     }
 }
+
