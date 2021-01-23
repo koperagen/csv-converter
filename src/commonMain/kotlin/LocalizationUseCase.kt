@@ -1,11 +1,11 @@
 suspend fun LocalizationContext.process(
-    filename: String,
+    csvFilename: String,
     rawData: List<Map<String, String>>,
     source: PropertiesFile
 ): LocalizationResult {
     val result = parse(rawData)
     val localization = when (result) {
-        is ParseResult.Data -> Localization(filename, result.locales, result.data)
+        is ParseResult.Data -> Localization(csvFilename, result.locales, result.data)
         is ParseResult.Error -> return Failure(result.toString())
     }
     val cache = localization.cache()

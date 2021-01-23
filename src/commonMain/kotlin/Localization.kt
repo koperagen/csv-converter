@@ -82,4 +82,4 @@ sealed class ParseResult {
     }
 }
 
-private const val COL_ID = "id"
+const val COL_ID = "id"
