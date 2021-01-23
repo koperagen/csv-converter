@@ -8,6 +8,46 @@ typealias TextId = String
 
 typealias Locale = String
 
+fun Localization.update(file: PropertiesFile): Localization {
+    require(file.locale in locales)
+
+    val translatedRows = file.contents
+    val textsMap = texts.associateByTo(mutableMapOf()) { it.id }
+
+    fun modifyText(row: Row, originalText: Text) {
+        val translatedVariants = originalText
+            .variants
+            .toMutableMap()
+            .also { it[file.locale] = Edited(row.text) }
+            .toMap()
+
+        textsMap[row.id] = originalText.copy(variants = translatedVariants)
+    }
+
+    fun addNewText(row: Row) {
+        val translatedVariants = locales.associateWithTo(mutableMapOf<TextId, PreEditedText>()) { Empty }
+        translatedVariants[file.locale] = Edited(row.text)
+        textsMap[row.id] = Text(row.id, translatedVariants)
+    }
+
+    translatedRows.forEach { row ->
+        val originalText = textsMap[row.id]
+        if (originalText != null) {
+            modifyText(row, originalText)
+        } else {
+            addNewText(row)
+        }
+    }
+    val editedTexts = textsMap.values.toList()
+    return copy(texts = editedTexts)
+}
+
+fun Localization.update(files: List<PropertiesFile>): Localization {
+    return files.fold(this) { acc, file ->
+        acc.update(file)
+    }
+}
+
 /*
  |  COL_ID |  en_EN  |   ....  |  ru_RU  |
  |---------|---------|---------|---------|

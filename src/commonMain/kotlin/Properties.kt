@@ -22,6 +22,18 @@ interface TranslationService {
     suspend fun translate(texts: List<String>, translation: Translation): List<String>
 
     data class Translation(val from: Locale, val to: Locale)
+
+    companion object {
+        val DUMMY = object : TranslationService {
+            override suspend fun translate(text: String, translation: Translation): String {
+                return text
+            }
+
+            override suspend fun translate(texts: List<String>, translation: Translation): List<String> {
+                return texts
+            }
+        }
+    }
 }
 
 interface LocalizationContext {
