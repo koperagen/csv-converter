@@ -1,6 +1,6 @@
 import ParseResult.*
 
-data class Localization(val file: String, val locales: Set<Locale>, val texts: List<Text>)
+data class Localization(val file: String, val source: Locale, val locales: Set<Locale>, val texts: List<Text>)
 
 data class Text(val id: TextId, val variants: Map<Locale, PreEditedText>)
 

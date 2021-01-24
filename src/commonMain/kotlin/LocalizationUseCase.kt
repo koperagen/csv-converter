@@ -5,7 +5,7 @@ suspend fun LocalizationContext.process(
 ): LocalizationResult {
     val result = parse(csvFile.rawData)
     val localization = when (result) {
-        is ParseResult.Data -> Localization(csvFile.name, result.locales, result.data)
+        is ParseResult.Data -> Localization(csvFile.name, source.locale, result.locales, result.data)
         is ParseResult.Error -> return Failure(result.toString())
     }
     val cache = localization.cache()

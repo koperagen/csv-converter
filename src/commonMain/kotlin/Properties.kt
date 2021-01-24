@@ -50,7 +50,7 @@ interface LocalizationContext {
 }
 
 fun Localization.cache(): List<LocalizationContext.Cache> {
-    return locales.map { locale ->
+    return (locales - source).map { locale ->
         val map = texts.associate {
             it.id to (it.variants[locale] ?: error("Localization file $file misses locale $locale for id ${it.id}"))
         }
