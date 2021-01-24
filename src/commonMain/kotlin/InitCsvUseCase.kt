@@ -6,7 +6,7 @@ fun init(file: PropertiesFile, locales: Set<Locale>): CsvFile {
         put(COL_ID, it.id)
         put(file.locale, it.text)
         for (locale in locales) {
-            put(it.id, "")
+            put(locale, "")
         }
     }
 

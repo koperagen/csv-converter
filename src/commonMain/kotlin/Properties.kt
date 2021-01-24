@@ -1,6 +1,6 @@
 data class Row(val id: TextId, val text: String)
 
-data class PropertiesFile(val groupName: String, val locale: Locale, val contents: List<Row>)
+data class PropertiesFile(val groupName: String, val locale: Locale, val contents: Iterable<Row>)
 
 val PropertiesFile.fullName: String get() = "${groupName}_$locale.properties"
 
@@ -39,7 +39,7 @@ interface TranslationService {
 interface LocalizationContext {
     suspend fun translate(
         cache: Map<TextId, PreEditedText>,
-        rows: List<Row>,
+        rows: Iterable<Row>,
         translation: TranslationService.Translation
     ): List<Row>
 
@@ -61,7 +61,7 @@ class PreTranslatedLocalizationContext(
 
     override suspend fun translate(
         cache: Map<TextId, PreEditedText>,
-        rows: List<Row>,
+        rows: Iterable<Row>,
         translation: TranslationService.Translation
     ): List<Row> {
         val candidates = rows.filterNot { cache[it.id] is Skipped }

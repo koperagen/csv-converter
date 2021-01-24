@@ -1,8 +1,8 @@
-data class CsvFile(val filename: String, val rawData: List<Map<String, String>>)
+data class CsvFile(val name: String, val rawData: List<Map<String, String>>)
 
 val CsvFile.headers: List<String> get() = rawData.firstOrNull()?.keys?.toList() ?: emptyList()
 
-val CsvFile.fullName get() = "$filename.csv"
+val CsvFile.filename get() = "$name.csv"
 
 fun Localization.toCsvFile(): CsvFile {
     val data = texts.map { it.toCsvRow() }
