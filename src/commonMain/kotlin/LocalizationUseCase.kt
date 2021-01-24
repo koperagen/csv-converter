@@ -1,18 +1,19 @@
+@ExperimentalStdlibApi
 suspend fun LocalizationContext.process(
-    csvFilename: String,
-    rawData: List<Map<String, String>>,
+    csvFile: CsvFile,
     source: PropertiesFile
 ): LocalizationResult {
-    val result = parse(rawData)
+    val result = parse(csvFile.rawData)
     val localization = when (result) {
-        is ParseResult.Data -> Localization(csvFilename, result.locales, result.data)
+        is ParseResult.Data -> Localization(csvFile.name, result.locales, result.data)
         is ParseResult.Error -> return Failure(result.toString())
     }
     val cache = localization.cache()
     val localizedFiles = localize(cache, source)
-    return Success(localizedFiles)
+    val updatedLocalization = localization.update(localizedFiles)
+    return Success(localizedFiles, updatedLocalization)
 }
 
 sealed class LocalizationResult
-data class Success(val files: List<PropertiesFile>) : LocalizationResult()
+data class Success(val files: List<PropertiesFile>, val localization: Localization) : LocalizationResult()
 data class Failure(val reason: String) : LocalizationResult()

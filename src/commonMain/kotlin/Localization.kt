@@ -56,7 +56,7 @@ fun Localization.update(files: List<PropertiesFile>): Localization {
  |   idN   |  var1   |   ....  |   var3  |
  -----------------------------------------
  */
-@OptIn(ExperimentalStdlibApi::class)
+@ExperimentalStdlibApi
 fun parse(rawData: List<Map<String, String>>): ParseResult {
     val anyRow = rawData.firstOrNull() ?: return Error.EmptyFile
     val locales: Set<Locale> = anyRow.keys - COL_ID
