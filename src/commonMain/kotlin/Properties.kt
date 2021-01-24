@@ -4,9 +4,12 @@ data class PropertiesFile(val groupName: String, val locale: Locale, val content
 
 val PropertiesFile.fullName: String get() = "${groupName}_$locale.properties"
 
-val PropertiesFile.contentString: String get() = contents.joinToString("\n") {
-    "${it.id}=${it.text}"
-}
+val PropertiesFile.contentString: String get() = contents
+    .joinTo(StringBuilder(contentLength()),"\n") { "${it.id}=${it.text}" }
+    .toString()
+
+private fun PropertiesFile.contentLength(): Int =
+    contents.sumOf { it.id.length + it.text.length }
 
 fun Iterable<String>.parse(): Iterable<Row> =
     filterNot { it.startsWith('#') || it.isBlank() }

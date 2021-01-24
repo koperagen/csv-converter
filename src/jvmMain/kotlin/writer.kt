@@ -13,18 +13,3 @@ private fun convert(csvFile: CsvFile): List<List<String>> = buildList(csvFile.ra
         add(row.values.toList())
     }
 }
-
-fun write(propertiesFile: PropertiesFile, dest: OutputStream) {
-    val str = convert(propertiesFile)
-    dest.writer().write(str)
-}
-
-private fun convert(file: PropertiesFile): String {
-    val sb = StringBuilder(file.contentLength())
-    return file.contents
-        .joinTo(sb, separator = "\n") { "${it.id}=${it.text}" }
-        .toString()
-}
-
-private fun PropertiesFile.contentLength(): Int =
-    contents.sumOf { it.id.length + it.text.length }
