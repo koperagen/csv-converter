@@ -9,6 +9,18 @@ fun Localization.toCsvFile(): CsvFile {
     return CsvFile(file, data)
 }
 
+@ExperimentalStdlibApi
+fun CsvFile.toLocalization(source: Locale): Localization? {
+    val (locales, data) = when (val result = parse(rawData)) {
+        is ParseResult.Data -> result
+        is ParseResult.Error -> {
+            println(result)
+            return null
+        }
+    }
+    return Localization(name, source, locales, data)
+}
+
 @OptIn(ExperimentalStdlibApi::class)
 private fun Text.toCsvRow(): Map<String, String> = buildMap {
     put(COL_ID, id)
