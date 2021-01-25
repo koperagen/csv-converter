@@ -21,9 +21,21 @@ class GoogleTranslate(
     override suspend fun translate(texts: List<String>, translation: TranslationService.Translation): List<String> =
         withContext(ioContext) {
             if (texts.isEmpty()) return@withContext emptyList()
-            service
-                .translate(texts, *translateOptions(translation))
-                .map { it.translatedText }
+            val chunks = texts
+                .map { if (it.length > 5000) "<>" else it }
+                .constrainedChunks(5000)
+                .flatMap { it.chunked(50) }
+
+            chunks.flatMap { chunk ->
+                try {
+                    service
+                        .translate(chunk, *translateOptions(translation))
+                        .map { it.translatedText }
+                } catch (ex: TranslateException) {
+                    println("$texts $translation")
+                    throw ex
+                }
+            }
         }
 
     private companion object {
@@ -42,12 +54,13 @@ fun List<String>.constrainedChunks(maxSize: Int): List<List<String>> {
     var left = 0
     forEachIndexed { index, s ->
         totalLength += s.length
-        if (totalLength >= maxSize) {
-            lists.add(subList(left, index - 1))
+        if (totalLength > maxSize) {
+            lists.add(subList(left, index))
             left = index
             totalLength = s.length
         }
     }
+    lists.add(subList(left, size))
     return lists
 }
 

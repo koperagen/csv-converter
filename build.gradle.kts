@@ -48,6 +48,7 @@ kotlin {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2-native-mt")
                 implementation("io.kotest:kotest-property:4.3.2")
+                implementation("io.kotest:kotest-property:4.3.2")
             }
         }
         val commonTest by getting {
