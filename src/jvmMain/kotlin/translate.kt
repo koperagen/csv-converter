@@ -36,6 +36,21 @@ class GoogleTranslate(
     }
 }
 
+fun List<String>.constrainedChunks(maxSize: Int): List<List<String>> {
+    val lists = mutableListOf<List<String>>()
+    var totalLength = 0
+    var left = 0
+    forEachIndexed { index, s ->
+        totalLength += s.length
+        if (totalLength >= maxSize) {
+            lists.add(subList(left, index - 1))
+            left = index
+            totalLength = s.length
+        }
+    }
+    return lists
+}
+
 fun googleTranslateService(): Translate {
     val credentials = GoogleCredentials.fromStream(FileInputStream(PATH))
     return TranslateOptions.newBuilder().setCredentials(credentials).build().service
