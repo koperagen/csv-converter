@@ -43,7 +43,7 @@ class GoogleTranslate(
             arrayOf(
                 Translate.TranslateOption.sourceLanguage(translation.from),
                 Translate.TranslateOption.targetLanguage(translation.to),
-                Translate.TranslateOption.model("base")
+                Translate.TranslateOption.model("nmt")
             )
     }
 }
