@@ -7,7 +7,7 @@ import java.io.File
 
 private const val OUTPUT_DIRECTORY = "/home/nikita/IdeaProjects/csv-converter/output/translated"
 
-private const val CSV_DIRECTORY = "/home/nikita/IdeaProjects/csv-converter/output"
+private const val CSV_DIRECTORY = "/home/nikita/IdeaProjects/csv-converter/output/translated"
 private const val PROPERTIES_DIRECTORY = "/home/nikita/AndroidStudioProjects/hackersimulator/android/src/main/assets/lang/"
 
 @ExperimentalStdlibApi
