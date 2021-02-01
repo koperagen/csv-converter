@@ -22,9 +22,7 @@ internal fun initCsv(input: File, inputLocale: Locale, outputDirectory: File, lo
 }
 
 internal fun propertiesFile(file: File, locale: Locale): PropertiesFile {
-    val group = file.nameWithoutExtension.let {
-        it.substringBeforeLast("_", it)
-    }
+    val group = file.nameWithoutExtension
     val contents = file.useLines { it.asIterable().parse() }
     return PropertiesFile(group, locale, contents)
 }
