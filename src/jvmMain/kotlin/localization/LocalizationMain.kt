@@ -10,6 +10,17 @@ private const val OUTPUT_DIRECTORY = "/home/nikita/IdeaProjects/csv-converter/ou
 private const val CSV_DIRECTORY = "/home/nikita/IdeaProjects/csv-converter/output/translated"
 private const val PROPERTIES_DIRECTORY = "/home/nikita/AndroidStudioProjects/hackersimulator/android/src/main/assets/lang/"
 
+interface Runtime {
+  val context: LocalizationContext
+  val csvReader: CsvReader
+  val locales: Set<Locale>
+  val sourceLocale: String
+
+  val baseDirectory: File
+  val outputDirectory: File
+  val csvDirectory: File
+}
+
 @ExperimentalStdlibApi
 fun main(): Unit = runBlocking {
     val context = PreTranslatedLocalizationContext(GoogleTranslate(Dispatchers.IO, googleTranslateService()))
@@ -17,14 +28,40 @@ fun main(): Unit = runBlocking {
     val locales = setOf("en")
     val sourceLocale = "ru"
 
-    val propertiesFiles = File(PROPERTIES_DIRECTORY)
+    val runtime = object : Runtime {
+        override val context: LocalizationContext = context
+        override val csvReader: CsvReader = csvReader
+        override val locales: Set<Locale> = locales
+        override val sourceLocale: String = sourceLocale
+
+        override val baseDirectory: File = File(PROPERTIES_DIRECTORY)
+        override val outputDirectory: File = File(OUTPUT_DIRECTORY)
+        override val csvDirectory: File = File(CSV_DIRECTORY)
+    }
+
+    val directories = File(PROPERTIES_DIRECTORY)
+      .walkTopDown()
+      .filter { it.isDirectory }
+
+    directories.forEach {
+        runtime.processDirectory(it)
+    }
+}
+
+@ExperimentalStdlibApi
+private suspend fun Runtime.processDirectory(directory: File) {
+    val relative = directory.relativeTo(baseDirectory)
+
+    val propertiesFiles = directory
         .walkTopDown()
+        .maxDepth(1)
         .filter { it.extension == "properties" }
         .map { propertiesFile(it, sourceLocale) }
         .toList()
 
+    val relatedCsvDirectory = csvDirectory.resolve(relative)
     val csvFiles = propertiesFiles.map { propertiesFile ->
-        val csvFile = File(CSV_DIRECTORY, "${propertiesFile.groupName}.csv")
+        val csvFile = File(relatedCsvDirectory, "${propertiesFile.groupName}.csv")
         if (csvFile.exists()) {
             csvReader
                 .read(csvFile)
@@ -36,7 +73,7 @@ fun main(): Unit = runBlocking {
     }
 
     propertiesFiles.zip(csvFiles) { properties, csv ->
-        context.applyLocalization(csv, properties, File(OUTPUT_DIRECTORY))
+        context.applyLocalization(csv, properties, outputDirectory.resolve(relative))
     }
 }
 
