@@ -1,3 +1,4 @@
+import java.io.File
 import kotlin.coroutines.CoroutineContext
 
 fun env(key: String, default: String): String {
@@ -26,5 +27,12 @@ class LocalizationSpec(val ioContext: CoroutineContext) : EnvironmentVariable<Lo
             "google" -> PreTranslatedLocalizationContext(GoogleTranslate(ioContext, googleTranslateService()))
             else -> error("$key enviroment variable should be either 'dummy' or 'google'")
         }
+    }
+}
+
+class FileSpec(override val key: String, override val default: String) : EnvironmentVariable<File> {
+
+    override fun convert(value: String): File {
+        return File(value)
     }
 }

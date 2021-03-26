@@ -1,11 +1,11 @@
 @OptIn(ExperimentalStdlibApi::class)
-fun PropertiesFile.toCsv(locales: Set<Locale>): CsvFile {
-    require(locale !in locales)
+fun PropertiesFile.toCsv(additionalLocales: Set<Locale>): CsvFile {
+    require(locale !in additionalLocales)
 
-    fun toCsvRow(it: Row) = buildMap<String, String>(2 + locales.size) {
+    fun toCsvRow(it: Row) = buildMap<String, String>(2 + additionalLocales.size) {
         put(COL_ID, it.id)
         put(locale, it.text)
-        for (locale in locales) {
+        for (locale in additionalLocales) {
             put(locale, "")
         }
     }
