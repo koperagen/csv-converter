@@ -15,7 +15,7 @@ fun main() {
 
 internal fun initCsv(input: File, inputLocale: Locale, outputDirectory: File, locales: Set<Locale>) {
     val properties = propertiesFile(input, inputLocale)
-    val csv = init(properties, locales)
+    val csv = properties.toCsv(locales)
     File(outputDirectory, csv.filename).outputStream().use {
         csvWriter().write(csv, it)
     }

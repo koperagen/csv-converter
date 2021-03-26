@@ -68,7 +68,7 @@ private suspend fun Runtime.processDirectory(directory: File) {
                 .toLocalization(sourceLocale)
                 ?.update(propertiesFile)
         } else {
-            init(propertiesFile, locales).toLocalization(sourceLocale)
+            propertiesFile.toCsv(locales).toLocalization(sourceLocale)
         } ?: error("Failed to parse CSV file for ${propertiesFile.fullName}")
     }
 
