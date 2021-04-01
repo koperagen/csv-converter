@@ -1,6 +1,6 @@
 A toolbox for semi-automated localization
 
-1. Convert properties file (part i18n bundle) to CSV
+1. Convert properties file (part i18n bundle) to CSV [[CLI app]](https://github.com/koperagen/csv-converter/tree/master/src/jvmMain/kotlin/csv)
 
     CSV seems to be natural fit for representing some entity with several parameters - localization variants in our case.
     Yet, string resources usually stored as `key=value` files.
@@ -15,7 +15,7 @@ A toolbox for semi-automated localization
    -----------------------------------------
 ```
 
-2. Translate texts using edited CSV as cache
+2. Translate texts using edited CSV as cache [[CLI app]](https://github.com/koperagen/csv-converter/tree/master/src/jvmMain/kotlin/localization)
     
     At this point you may want to preprocess data, manually edit sensitive formatting etc.
     You can do that by editing CSV from step 1. Later, this process could be repeated after machine translation till perfection.
